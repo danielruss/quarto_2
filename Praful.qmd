@@ -1,0 +1,51 @@
+---
+title: "Untitled"
+format: html
+---
+
+```{r}
+#| output: true
+
+library(tidyverse)
+
+pmax.abs <- function(x, y) {
+  lx=length(x)
+  ly=length(y)
+  if (lx > ly) {
+    if (lx %% ly !=0) stop("cannot recycle y evenly")
+    y <- rep(y, lx %/% ly)
+  }
+  if (lx < ly){
+    if (ly %% lx !=0) stop("cannot recycle x evenly")
+    x <- rep(x, ly %/% lx)
+  }
+  z <- y
+  x.bigger <- (abs(x) > abs(y))
+  print(x.bigger)
+  z[x.bigger] <- x [x.bigger]
+  return(z)
+}
+
+#xy = tibble(x=pmax.abs(1e-9,seq(-6,6,0.5)),y=pmax.abs(1e-9,0.5*x+1))
+xy = tibble(x=seq(-20,0,0.5),y=0.5*x+1)
+ojs_define(xy = xy)
+
+
+```
+
+```{ojs}
+
+xy
+xyt=transpose(xy).map(p=> ({x: (p.x===undefined)?0:p.x, y: (p.y===undefined)?0:p.y})  )
+xyt
+
+yearlyChart = Plot.plot({
+  marks: [
+    Plot.line(xyt, 
+      {x: "x", y: "y"}, 
+      { stroke: "#FFFF00" }
+    )
+  ]}
+)
+```
+
